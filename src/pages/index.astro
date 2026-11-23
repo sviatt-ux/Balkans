@@ -3,15 +3,33 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+
+// 🎯 ИМПОРТИРУЕМ КАРТИНКУ ЧЕРЕЗ ASTRO — теперь он её ВИДИТ и оптимизирует!
+import heroImage from '../assets/hero.jpg';
+import { getImage } from 'astro:assets';
+
+// 🚀 Генерируем оптимизированную версию (WebP/AVIF + правильный размер)
+const optimizedHero = await getImage({
+	src: heroImage,
+	width: 1920,
+	quality: 80,
+	format: 'webp', // или 'avif' — ещё круче, но WebP универсальнее
+});
+
+// URL оптимизированной картинки — сунем его в CSS
+const heroBgUrl = optimizedHero.src;
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+
+		<!-- ⚡ PRELOAD — браузер начнёт грузить картинку ДО того, как увидит CSS -->
+		<link rel="preload" as="image" href={heroBgUrl} fetchpriority="high" />
 	</head>
-	<body>
-		<!-- 1. ХЕДЕР (ЖЕСТКО ФИКСИРОВАННЫЙ) -->
+	<body style={`--hero-bg: url('${heroBgUrl}')`}>
+		<!-- 1. ХЕДЕР (ЖЁСТКО ФИКСИРОВАННЫЙ) -->
 		<div class="header-fixed">
 			<Header />
 		</div>
@@ -63,32 +81,30 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 	}
 
 	:global(body) {
-		/* Ваше фото-фон */
-		background-image: url('/hero.jpg'); 
+		/* 🎯 Берём URL из CSS-переменной, которую мы задали в <body style> */
+		background-image: var(--hero-bg);
 		background-size: cover;
 		background-position: center;
-		background-attachment: fixed; 
+		background-attachment: fixed;
 		background-repeat: no-repeat;
-		background-color: #f4f4f4; 
+		background-color: #f4f4f4;
 	}
 
 	/* --- 1. ХЕДЕР --- */
 	.header-fixed {
-		position: fixed; /* Всегда на экране */
+		position: fixed;
 		top: 0;
 		left: 0;
 		width: 100%;
-		z-index: 1000; /* Самый высокий приоритет */
-		background-color: #ffffff; /* Непрозрачный */
-		border-bottom: 1px solid #eee; 
+		z-index: 1000;
+		background-color: #ffffff;
+		border-bottom: 1px solid #eee;
 	}
 
 	/* --- 2. HERO-СЕКЦИЯ --- */
 	.hero {
-		/* Высота экрана. Отнимаем высоту хедера (например, 80px), чтобы контент не уезжал под него */
-		min-height: calc(100vh - 80px); 
-		/* Отступ сверху равен высоте хедера */
-		padding-top: 80px; 
+		min-height: calc(100vh - 80px);
+		padding-top: 80px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -131,21 +147,20 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 	/* --- 3. БЕЛЫЙ КОНТЕНТ --- */
 	.content {
 		position: relative;
-		z-index: 10; 
-		background-color: #ffffff; 
-		width: 100vw; 
+		z-index: 10;
+		background-color: #ffffff;
+		width: 100vw;
 		max-width: 100%;
 		margin: 0;
-		padding: 4rem 0 8rem; 
-		/* Убрали border-radius! Теперь углы прямые */
-		box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1); /* Тень осталась, чтобы был эффект наезда */
+		padding: 4rem 0 8rem;
+		box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
 		min-height: 100vh;
 	}
 
 	.content-inner {
-		max-width: 800px; 
-		margin: 0 auto;   
-		padding: 0 1.5rem; 
+		max-width: 800px;
+		margin: 0 auto;
+		padding: 0 1.5rem;
 	}
 
 	.content h2 {
@@ -162,8 +177,8 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 	/* --- 4. ФУТЕР --- */
 	.footer-container {
 		position: relative;
-		z-index: 10; 
-		background-color: #f9f9f9; 
+		z-index: 10;
+		background-color: #f9f9f9;
 		border-top: 1px solid #eee;
 		width: 100%;
 	}
@@ -172,7 +187,7 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 	@media (max-width: 768px) {
 		.hero {
 			min-height: 100svh;
-			padding-top: 70px; /* Если хедер на мобильных ниже */
+			padding-top: 70px;
 		}
 	}
 </style>
