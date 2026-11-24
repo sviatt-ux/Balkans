@@ -30,11 +30,25 @@ const navLinks = [
 	{ name: 'Блог', url: '/blog' },
 	{ name: 'О нас', url: '/about' }
 ];
+
+import logoImg from '../assets/images/logo.png';
 ---
 
 <header class="site-header">
 	<div class="header-inner">
-		<a href="/" class="logo">🚌 Балканы без авто</a>
+		<!-- 🎯 ОБНОВЛЁННЫЙ ЛОГОТИП -->
+		<a href="/" class="logo">
+			<img 
+				src={logoImg.src} 
+				alt="Балканы без авто - путешествия на общественном транспорте" 
+				class="logo-img"
+				width="40" 
+				height="40"
+				fetchpriority="high" 
+			/>
+			<span class="logo-text">Балканы без авто</span>
+		</a>
+
 
 		<nav class="desktop-nav" aria-label="Основная навигация">
 			<ul class="nav-list">
@@ -103,11 +117,24 @@ const navLinks = [
 		justify-content: space-between;
 	}
 
-	.logo {
+		.logo {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem; /* Расстояние между иконкой и текстом */
+		text-decoration: none;
+	}
+
+	.logo-img {
+		height: 40px; /* Идеально вписывается в хедер высотой 70px */
+		width: auto;
+		object-fit: contain;
+		display: block;
+	}
+
+	.logo-text {
 		font-size: 1.25rem;
 		font-weight: 800;
 		color: #111;
-		text-decoration: none;
 		letter-spacing: -0.02em;
 		white-space: nowrap;
 	}
