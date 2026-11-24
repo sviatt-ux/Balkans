@@ -2,64 +2,60 @@
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
-// 🎯 ИМПОРТИРУЕМ КАРТИНКУ ЧЕРЕЗ ASTRO — теперь он её ВИДИТ и оптимизирует!
+const SITE_TITLE = 'Балканы без авто';
+const SITE_DESCRIPTION = 'Аутентичные путешествия по Балканам на общественном транспорте. Маршруты, лайфхаки и вдохновение.';
+
+// 🎯 ИМПОРТИРУЕМ КАРТИНКУ ЧЕРЕЗ ASTRO
 import heroImage from '../assets/hero.jpg';
 import { getImage } from 'astro:assets';
 
-// 🚀 Генерируем оптимизированную версию (WebP/AVIF + правильный размер)
+// 🚀 Генерируем оптимизированную версию
 const optimizedHero = await getImage({
 	src: heroImage,
 	width: 1920,
 	quality: 80,
-	format: 'webp', // или 'avif' — ещё круче, но WebP универсальнее
+	format: 'webp',
 });
 
-// URL оптимизированной картинки — сунем его в CSS
 const heroBgUrl = optimizedHero.src;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-
-		<!-- ⚡ PRELOAD — браузер начнёт грузить картинку ДО того, как увидит CSS -->
 		<link rel="preload" as="image" href={heroBgUrl} fetchpriority="high" />
 	</head>
 	<body style={`--hero-bg: url('${heroBgUrl}')`}>
-		<!-- 1. ХЕДЕР (ЖЁСТКО ФИКСИРОВАННЫЙ) -->
-		<div class="header-fixed">
-			<Header />
-		</div>
+		
+		<!-- 1. ХЕДЕР -->
+		<Header />
 
-		<!-- 2. HERO-СЕКЦИЯ (ТЕКСТ) -->
+		<!-- 2. HERO-СЕКЦИЯ -->
 		<section class="hero">
 			<div class="hero__content">
-				<h1 class="hero__title">A better internet for everyone is possible.<br>Today.</h1>
+				<h1 class="hero__title">Открой Балканы по-настоящему.<br>Без машины. Без спешки. Без границ.</h1>
 				<p class="hero__subtitle">
-					How do we build social media that strengthens democratic discourse and is both resilient and appealing?
+					Аутентичные маршруты, скрытые жемчужины и полная свобода передвижения на автобусах, поездах и паромах. Твоё приключение начинается здесь.
 				</p>
-				<p class="hero__subtitle">The Open Social Web Alliance aims to provide the answers.</p>
-				<a href="#" class="hero__button">Read the policy paper (PDF)</a>
+				<a href="/routes" class="hero__button">Выбрать маршрут</a>
 			</div>
 		</section>
 
 		<!-- 3. БЕЛЫЙ КОНТЕНТ -->
 		<main class="content">
 			<div class="content-inner">
-				<h2>The Vision</h2>
+				<h2>Почему без авто?</h2>
 				<p>
-					A shared, standardised communication protocol: it may sound technically complicated,
-					but it is as simple as it is brilliant, and the technical blueprint has long been familiar to
-					all of us: email. Whether your address is hosted by Proton, Posteo, Gmail or GMX, your
-					digital letters reach their destination. This is the idea we build on.
+					Забудь о стрессе от парковки в узких улочках Дубровника и бесконечных пробках на побережье. 
+					Настоящая душа Балкан раскрывается не из окна арендованной машины, а в ритме местных кафе, 
+					в разговорах с попутчиками в старинных поездах и в неожиданных остановках у живописных бухт, 
+					куда не ведёт ни один навигатор.
 				</p>
 				<p>
-					The year is 2028. Thanks to smart investment and political foresight, the Open Social
-					Web Alliance has successfully established a standard that allows users to communicate
-					across platforms seamlessly.
+					Мы доказали: путешествовать по Хорватии, Черногории, Албании и Боснии на общественном транспорте 
+					не только возможно, но и в разы интереснее, дешевле и экологичнее. Присоединяйся к движению!
 				</p>
 			</div>
 		</main>
@@ -72,89 +68,95 @@ const heroBgUrl = optimizedHero.src;
 </html>
 
 <style>
-	/* --- ГЛОБАЛЬНЫЙ СБРОС --- */
 	:global(html), :global(body) {
 		margin: 0;
 		padding: 0;
 		width: 100%;
 		max-width: 100%;
+		overflow-x: hidden; /* 🛡️ Блокируем горизонтальный скролл */
+		font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+	}
+
+	:global(*), :global(*::before), :global(*::after) {
+		box-sizing: border-box; /* ✅ Padding не добавляет ширину */
 	}
 
 	:global(body) {
-		/* 🎯 Берём URL из CSS-переменной, которую мы задали в <body style> */
 		background-image: var(--hero-bg);
 		background-size: cover;
 		background-position: center;
-		background-attachment: fixed;
+		background-attachment: fixed; /* ✅ ВЕРНУЛИ! Фон фиксирован при скролле */
 		background-repeat: no-repeat;
 		background-color: #f4f4f4;
 	}
 
-	/* --- 1. ХЕДЕР --- */
-	.header-fixed {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		z-index: 1000;
-		background-color: #ffffff;
-		border-bottom: 1px solid #eee;
-	}
-
-	/* --- 2. HERO-СЕКЦИЯ --- */
 	.hero {
-		min-height: calc(100vh - 80px);
-		padding-top: 80px;
+		min-height: calc(100vh - 70px);
+		padding-top: 70px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		text-align: center;
+		width: 100%;
 	}
 
 	.hero__content {
 		max-width: 900px;
 		padding: 2rem;
+		width: 100%;
 	}
 
 	.hero__title {
-		font-size: clamp(2rem, 5vw, 4.5rem);
-		font-weight: 700;
-		color: #111;
+		font-size: clamp(2.2rem, 6vw, 4.5rem);
+		font-weight: 800;
+		color: #ffffff;
 		line-height: 1.1;
 		margin-bottom: 1.5rem;
-		text-shadow: 0 2px 10px rgba(255, 255, 255, 0.8);
+		text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+		letter-spacing: -0.02em;
 	}
 
 	.hero__subtitle {
-		font-size: clamp(1rem, 2vw, 1.4rem);
-		color: #333;
-		margin-bottom: 1rem;
-		text-shadow: 0 1px 5px rgba(255, 255, 255, 0.8);
+		font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+		color: #f0f0f0;
+		margin-bottom: 2rem;
+		text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+		max-width: 700px;
+		margin-left: auto;
+		margin-right: auto;
 	}
 
 	.hero__button {
 		display: inline-block;
-		background-color: #fbc02d;
-		color: #111;
-		padding: 1rem 2rem;
-		border-radius: 4px;
+		background-color: #FF6B35;
+		color: #ffffff;
+		padding: 1rem 2.5rem;
+		border-radius: 8px;
 		text-decoration: none;
 		font-weight: 700;
-		margin-top: 2rem;
-		box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+		font-size: 1.1rem;
+		margin-top: 1rem;
+		box-shadow: 0 4px 14px rgba(255, 107, 53, 0.4);
+		transition: transform 0.1s ease, background-color 0.15s ease, box-shadow 0.15s ease;
 	}
+	.hero__button:hover {
+		background-color: #e55a2b;
+		transform: translateY(-2px);
+		box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5);
+	}
+	.hero__button:active { transform: translateY(0); }
 
-	/* --- 3. БЕЛЫЙ КОНТЕНТ --- */
 	.content {
 		position: relative;
 		z-index: 10;
 		background-color: #ffffff;
-		width: 100vw;
+		width: 100%;
 		max-width: 100%;
 		margin: 0;
-		padding: 4rem 0 8rem;
-		box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
-		min-height: 100vh;
+		padding: 5rem 0 6rem;
+		/* ✅ УБРАЛИ box-shadow — он вызывал горизонтальный скролл! */
+		/* Если нужна тень, используем inset или box-shadow только сверху */
+		box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08); /* Только сверху, не выходит за края */
 	}
 
 	.content-inner {
@@ -164,17 +166,20 @@ const heroBgUrl = optimizedHero.src;
 	}
 
 	.content h2 {
-		font-size: clamp(2rem, 4vw, 3rem);
+		font-size: clamp(1.8rem, 4vw, 2.5rem);
+		font-weight: 800;
 		margin-bottom: 1.5rem;
+		color: #111;
+		letter-spacing: -0.01em;
 	}
 
 	.content p {
 		font-size: 1.15rem;
 		line-height: 1.7;
 		margin-bottom: 1.5rem;
+		color: #444;
 	}
 
-	/* --- 4. ФУТЕР --- */
 	.footer-container {
 		position: relative;
 		z-index: 10;
@@ -183,11 +188,11 @@ const heroBgUrl = optimizedHero.src;
 		width: 100%;
 	}
 
-	/* --- 5. АДАПТИВ --- */
 	@media (max-width: 768px) {
 		.hero {
 			min-height: 100svh;
 			padding-top: 70px;
 		}
+		.hero__content { padding: 1.5rem; }
 	}
 </style>
