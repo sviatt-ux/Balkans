@@ -1,0 +1,208 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map(post => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const displayDate = post.data.updatedDate ? post.data.updatedDate : post.data.pubDate;
+const formattedDate = displayDate.toLocaleDateString('ru-RU', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <BaseHead 
+      title={`${post.data.title} | Балканы без авто`} 
+      description={post.data.description} 
+    />
+  </head>
+  <body>
+    <Header />
+
+    <article class="article-page">
+      <div class="article-inner">
+        <header class="article-header">
+          <h1 class="article-title">{post.data.title}</h1>
+          <time class="article-date" datetime={displayDate.toISOString()}>
+            Обновлено: {formattedDate}
+          </time>
+          <p class="article-description">{post.data.description}</p>
+        </header>
+
+        {post.data.heroImage && (
+          <div class="article-hero">
+            <img 
+              src={post.data.heroImage.src} 
+              alt={post.data.title}
+              class="article-hero-img"
+              width={post.data.heroImage.width}
+              height={post.data.heroImage.height}
+            />
+          </div>
+        )}
+
+        <div class="article-content">
+          <Content />
+        </div>
+
+        <div class="article-back">
+          <a href="/blog" class="back-button">← Вернуться к блогу</a>
+        </div>
+      </div>
+    </article>
+
+    <Footer />
+  </body>
+</html>
+
+<style>
+  :global(body) {
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  .article-page {
+    padding-top: 100px;
+    padding-bottom: 5rem;
+    background-color: #ffffff;
+    min-height: 100vh;
+  }
+
+  .article-inner {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .article-header {
+    margin-bottom: 2rem;
+  }
+
+  .article-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    color: #111;
+    margin: 0 0 1rem 0;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  .article-date {
+    font-size: 1rem;
+    color: #888;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    display: block;
+  }
+
+  .article-description {
+    font-size: 1.25rem;
+    color: #555;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .article-hero {
+    margin: 2rem 0;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .article-hero-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 12px;
+  }
+
+  .article-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #333;
+  }
+
+  .article-content h2 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #111;
+    margin: 2.5rem 0 1rem 0;
+  }
+
+  .article-content h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #111;
+    margin: 2rem 0 1rem 0;
+  }
+
+  .article-content p {
+    margin-bottom: 1.5rem;
+  }
+
+  .article-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+  }
+
+  .article-content a {
+    color: #FF6B35;
+    text-decoration: underline;
+  }
+
+  .article-content ul, .article-content ol {
+    margin-bottom: 1.5rem;
+    padding-left: 2rem;
+  }
+
+  .article-content li {
+    margin-bottom: 0.5rem;
+  }
+
+  .article-back {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .back-button {
+    display: inline-block;
+    background-color: #FF6B35;
+    color: #ffffff;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: background-color 0.15s ease, transform 0.1s ease;
+  }
+
+  .back-button:hover {
+    background-color: #e55a2b;
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 768px) {
+    .article-page {
+      padding-top: 90px;
+    }
+    .article-inner {
+      padding: 0 1rem;
+    }
+  }
+</style>
