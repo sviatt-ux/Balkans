@@ -1,112 +1,133 @@
 ---
-import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
-import Footer from '../../components/Footer.astro';
-import FormattedDate from '../../components/FormattedDate.astro';
 import Header from '../../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import Footer from '../../components/Footer.astro';
+import PostCard from '../../components/PostCard.astro';
 
-const posts = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
+const SITE_TITLE = 'Блог | Балканы без авто';
+const SITE_DESCRIPTION = 'Все статьи, маршруты и лайфхаки о путешествиях по Балканам на общественном транспорте.';
+
+const posts = await getCollection('blog');
+const sortedPosts = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
 <!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-		<style>
-			main {
-				width: 960px;
-			}
-			ul {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 2rem;
-				list-style-type: none;
-				margin: 0;
-				padding: 0;
-			}
-			ul li {
-				width: calc(50% - 1rem);
-			}
-			ul li * {
-				text-decoration: none;
-				transition: 0.2s ease;
-			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
-			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
-			ul li img {
-				margin-bottom: 0.5rem;
-				border-radius: 12px;
-			}
-			ul li a {
-				display: block;
-			}
-			.title {
-				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1;
-			}
-			.date {
-				margin: 0;
-				color: rgb(var(--gray));
-			}
-			ul li a:hover h4,
-			ul li a:hover .date {
-				color: rgb(var(--accent));
-			}
-			ul a:hover img {
-				box-shadow: var(--box-shadow);
-			}
-			@media (max-width: 720px) {
-				ul {
-					gap: 0.5em;
-				}
-				ul li {
-					width: 100%;
-					text-align: center;
-				}
-				ul li:first-child {
-					margin-bottom: 0;
-				}
-				ul li:first-child .title {
-					font-size: 1.563em;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
-			<section>
-				<ul>
-					{posts.map((post) => (
-						<li>
-							<a href={`/blog/${post.id}/`}>
-								{post.data.heroImage && (
-									<Image width={720} height={360} src={post.data.heroImage} alt="" />
-								)}
-								<h4 class="title">{post.data.title}</h4>
-								<p class="date">
-									<FormattedDate date={post.data.pubDate} />
-								</p>
-							</a>
-						</li>
-					))}
-				</ul>
-			</section>
-		</main>
-		<Footer />
-	</body>
+<html lang="ru">
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+  </head>
+  <body>
+    <Header />
+
+    <!-- 🎯 ЗАМЕНИЛИ <main> НА <div>, ЧТОБЫ ИЗБЕЖАТЬ КОНФЛИКТА С global.css -->
+    <div class="blog-page">
+      <div class="blog-inner">
+        <h1 class="blog-title">Блог</h1>
+        <p class="blog-subtitle">
+          Истории, маршруты и лайфхаки для путешествий по Балканам без автомобиля.
+        </p>
+
+        {sortedPosts.length === 0 ? (
+          <p class="empty-message">Пока нет статей. Загляните позже!</p>
+        ) : (
+          <div class="posts-grid">
+            {sortedPosts.map(post => (
+              <PostCard
+                title={post.data.title}
+                description={post.data.description}
+                pubDate={post.data.pubDate}
+                updatedDate={post.data.updatedDate}
+                slug={post.slug}
+                heroImage={post.data.heroImage}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+
+    <Footer />
+  </body>
 </html>
+
+<style>
+  :global(body) {
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  .blog-page {
+    padding-top: 100px;
+    padding-bottom: 5rem;
+    background-color: #ffffff;
+    min-height: 100vh;
+    width: 100%; /* 🎯 НА ВСЮ ШИРИНУ! */
+  }
+
+  .blog-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    width: 100%;
+  }
+
+  .blog-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    color: #111;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.02em;
+  }
+
+  .blog-subtitle {
+    font-size: 1.15rem;
+    color: #555;
+    margin: 0 0 3rem 0;
+    max-width: 600px;
+  }
+
+  .empty-message {
+    font-size: 1.1rem;
+    color: #888;
+    text-align: center;
+    padding: 3rem 0;
+  }
+
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3rem 2.5rem;
+  }
+
+  @media (max-width: 1024px) {
+    .blog-inner {
+      padding: 0 1.5rem;
+    }
+    .posts-grid {
+      gap: 2.5rem 2rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .blog-inner {
+      padding: 0 1rem;
+    }
+    .posts-grid {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+    .blog-page {
+      padding-top: 90px;
+      padding-bottom: 3rem;
+    }
+    .blog-subtitle {
+      margin-bottom: 2rem;
+    }
+  }
+
+  @media (max-width: 375px) {
+    .blog-inner {
+      padding: 0 0.75rem;
+    }
+  }
+</style>
