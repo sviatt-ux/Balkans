@@ -117,21 +117,26 @@ import logoImg from '../assets/images/logo.png';
 		justify-content: space-between;
 	}
 
-		.logo {
+			.logo {
 		display: flex;
 		align-items: center;
-		gap: 0.75rem; /* Расстояние между иконкой и текстом */
+		gap: 0.75rem; /* Расстояние между иконкой и текстом (если текст нужен отдельно) */
 		text-decoration: none;
+		height: 100%; /* Занимаем всю высоту контейнера хедера */
 	}
 
 	.logo-img {
-		height: 40px; /* Идеально вписывается в хедер высотой 70px */
+		height: 70px; /* 🎯 РОВНО высота хедера! */
 		width: auto;
 		object-fit: contain;
 		display: block;
 	}
 
 	.logo-text {
+		/* ⚠️ ВАЖНО: Если на твоей картинке logo.png УЖЕ есть надпись "Балканы без авто", 
+		   раскомментируй строку ниже (убери /* и * /), чтобы скрыть дублирующий текст! */
+		/* display: none; */
+		
 		font-size: 1.25rem;
 		font-weight: 800;
 		color: #111;
