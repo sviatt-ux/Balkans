@@ -27,8 +27,11 @@ const heroBgUrl = optimizedHero.src;
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 		<link rel="preload" as="image" href={heroBgUrl} fetchpriority="high" />
 	</head>
-	<body style={`--hero-bg: url('${heroBgUrl}')`}>
+	<body>
 		
+		<!-- 🎯 Отдельный fixed-слой для фона hero (не исчезает при ESC) -->
+		<div class="hero-bg" style={`background-image: url('${heroBgUrl}')`} aria-hidden="true"></div>
+
 		<!-- 1. ХЕДЕР -->
 		<Header />
 
@@ -73,21 +76,27 @@ const heroBgUrl = optimizedHero.src;
 		padding: 0;
 		width: 100%;
 		max-width: 100%;
-		overflow-x: hidden; /* 🛡️ Блокируем горизонтальный скролл */
+		overflow-x: hidden;
 		font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 	}
 
 	:global(*), :global(*::before), :global(*::after) {
-		box-sizing: border-box; /* ✅ Padding не добавляет ширину */
+		box-sizing: border-box;
 	}
 
 	:global(body) {
-		background-image: var(--hero-bg);
+		background-color: #f4f4f4;
+	}
+
+	/* 🎯 Fixed-слой для фона hero — не исчезает при ESC */
+	:global(.hero-bg) {
+		position: fixed;
+		inset: 0;
+		z-index: -1;
 		background-size: cover;
 		background-position: center;
-		background-attachment: fixed; /* ✅ ВЕРНУЛИ! Фон фиксирован при скролле */
 		background-repeat: no-repeat;
-		background-color: #f4f4f4;
+		pointer-events: none;
 	}
 
 	.hero {
@@ -154,9 +163,7 @@ const heroBgUrl = optimizedHero.src;
 		max-width: 100%;
 		margin: 0;
 		padding: 5rem 0 6rem;
-		/* ✅ УБРАЛИ box-shadow — он вызывал горизонтальный скролл! */
-		/* Если нужна тень, используем inset или box-shadow только сверху */
-		box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08); /* Только сверху, не выходит за края */
+		box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
 	}
 
 	.content-inner {
